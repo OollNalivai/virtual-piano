@@ -1,11 +1,19 @@
-const btnNotes = document.querySelector('.btn-notes');
-const btnLetters = document.querySelector('.btn-letters');
-const keyArray = document.querySelectorAll('.piano-key');
 const piano = document.querySelector('.piano');
+const keyArray = document.querySelectorAll('.piano-key');
 
-// play Audio
-const elem = async (src) => {
+// fullscreen
+const fullScreen = document.querySelector('.fullscreen');
+
+fullScreen.addEventListener('click', () => {
+    !document.fullscreenElement
+        ? document.documentElement.requestFullscreen()
+        : document.exitFullscreen()
+});
+
+// make sound
+const playAudio = async (src) => {
     const audio = new Audio();
+
     if (src) {
         audio.src = src;
 
@@ -13,40 +21,19 @@ const elem = async (src) => {
     }
 }
 
-// switch active mode
-const clickEvt = flag => {
-    play(flag);
-
-    const notesClassList = btnNotes.classList;
-    const lettersClassList = btnLetters.classList;
-
-    flag ? notesClassList.add('btn-active') : notesClassList.remove('btn-active');
-    flag ? lettersClassList.remove('btn-active') : lettersClassList.add('btn-active');
-
-    for (const {classList} of keyArray) {
-        flag ? classList.remove('piano-key-letter') : classList.add('piano-key-letter');
-    }
-}
-
-// btn switch notes mode
-btnNotes.addEventListener('click', () => clickEvt(true));
-
-// btn switch letters mode
-btnLetters.addEventListener('click', () => clickEvt(false));
-
 // event Keypress note
-const eventKeypress = async Event => {
+const eventKeypress = async ({repeat, code}) => {
     const keyPick = [...document.querySelectorAll('.piano-key')]
-        .find(el => 'Key' + el.getAttribute('data-letter') === Event.code);
+        .find(el => `Key${el.getAttribute('data-letter')}` === code);
 
-    if (Event.repeat) { return }
+    if (repeat) { return }
 
     if (keyPick !== undefined) {
-        const src = keyPick?.getAttribute('data-src');
+        const audioSrc = keyPick.getAttribute('data-src');
 
-        keyPick?.classList.add('piano-key-active', 'piano-key-active-pseudo');
+        keyPick.classList.add('piano-key-active', 'piano-key-active-pseudo');
 
-        await elem(src);
+        await playAudio(audioSrc);
 
         setTimeout(() => {
             keyArray.forEach(element => {
@@ -56,20 +43,12 @@ const eventKeypress = async Event => {
 
                 }
             });
-        }, 70);
+        }, 100);
     }
 }
 
 // event Click Mouseover note
-const eventClick = async Event => {
-    const target = Event.target;
-    target.classList
-        .add('piano-key-active', 'piano-key-active-pseudo');
-
-    const src = target.getAttribute('data-src');
-
-    await elem(src);
-
+const timeout = (keyArray, target) => {
     setTimeout(() => {
         keyArray.forEach(el => {
             if (el.classList.contains('piano-key-active')) {
@@ -77,27 +56,29 @@ const eventClick = async Event => {
                     .remove('piano-key-active', 'piano-key-active-pseudo');
             }
         });
-    }, 70);
+    }, 100);
+};
+
+const eventClick = async ({target}) => {
+    target.classList.add('piano-key-active', 'piano-key-active-pseudo');
+
+    const audioSrc = target.getAttribute('data-src');
+
+    await playAudio(audioSrc);
+
+    timeout(keyArray, target);
 }
 
 // event Click Mouseover note
-const eventMouseover = async Event => {
-    if (Event.buttons) {
-        const target = Event.target;
-        target.classList
-            .add('piano-key-active', 'piano-key-active-pseudo');
-        const src = target.getAttribute('data-src');
+const eventMouseover = async ({target, buttons}) => {
+    if (buttons) {
+        target.classList.add('piano-key-active', 'piano-key-active-pseudo');
 
-        await elem(src);
+        const audioSrc = target.getAttribute('data-src');
 
-        setTimeout(() => {
-            keyArray.forEach(el => {
-                if (el.classList.contains('piano-key-active')) {
-                    target.classList
-                        .remove('piano-key-active', 'piano-key-active-pseudo');
-                }
-            });
-        }, 70);
+        await playAudio(audioSrc);
+
+        timeout(keyArray, target);
     }
 };
 
@@ -118,13 +99,28 @@ const evtPlay = flag => {
 
 evtPlay(true);
 
+// switch active mode
+const btnNotes = document.querySelector('.btn-notes');
+const btnLetters = document.querySelector('.btn-letters');
+
+const clickEvt = flag => {
+    play(flag);
+
+    const notesClassList = btnNotes.classList;
+    const lettersClassList = btnLetters.classList;
+
+    flag ? notesClassList.add('btn-active') : notesClassList.remove('btn-active');
+    flag ? lettersClassList.remove('btn-active') : lettersClassList.add('btn-active');
+
+    for (const {classList} of keyArray) {
+        flag ? classList.remove('piano-key-letter') : classList.add('piano-key-letter');
+    }
+}
+
+// btn switch notes mode
+btnNotes.addEventListener('click', () => clickEvt(true));
+
+// btn switch letters mode
+btnLetters.addEventListener('click', () => clickEvt(false));
+
 const play = flag => evtPlay(flag);
-
-// fullscreen
-const fullScreen = document.querySelector('.fullscreen');
-
-fullScreen.addEventListener('click', () => {
-    !document.fullscreenElement
-        ? document.documentElement.requestFullscreen()
-        : document.exitFullscreen()
-});
