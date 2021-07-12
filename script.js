@@ -23,8 +23,7 @@ const playAudio = async (src) => {
 
 // event Keypress note
 const eventKeypress = async ({repeat, code}) => {
-    const keyPick = [...document.querySelectorAll('.piano-key')]
-        .find(el => `Key${el.getAttribute('data-letter')}` === code);
+    const keyPick = [...keyArray].find(el => `Key${el.getAttribute('data-letter')}` === code);
 
     if (repeat) { return }
 
@@ -32,7 +31,7 @@ const eventKeypress = async ({repeat, code}) => {
         const audioSrc = keyPick.getAttribute('data-src');
 
         keyPick.classList.add('piano-key-active', 'piano-key-active-pseudo');
-
+        
         await playAudio(audioSrc);
 
         setTimeout(() => {

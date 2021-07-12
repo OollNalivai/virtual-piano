@@ -40,12 +40,11 @@ body {
 	margin: 0 auto;
 }
 .btn-container {
-	display: flex;
-	justify-content: space-between;
-	width: 306px;
-	height: 40px;
-	margin: 0 auto;
-	margin-bottom: 80px;
+    display: flex;
+    justify-content: space-between;
+    width: 306px;
+    height: 40px;
+    margin: 0 auto 80px;
 }
 .btn {
 	width: 150px;
