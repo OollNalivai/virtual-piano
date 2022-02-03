@@ -31,7 +31,7 @@ const eventKeypress = async ({repeat, code}) => {
         const audioSrc = keyPick.getAttribute('data-src');
 
         keyPick.classList.add('piano-key-active', 'piano-key-active-pseudo');
-        
+
         await playAudio(audioSrc);
 
         setTimeout(() => {
@@ -46,7 +46,6 @@ const eventKeypress = async ({repeat, code}) => {
     }
 }
 
-// event Click Mouseover note
 const timeout = (keyArray, target) => {
     setTimeout(() => {
         keyArray.forEach(el => {
@@ -58,6 +57,7 @@ const timeout = (keyArray, target) => {
     }, 100);
 };
 
+// event Click note
 const eventClick = async ({target}) => {
     target.classList.add('piano-key-active', 'piano-key-active-pseudo');
 
@@ -68,16 +68,10 @@ const eventClick = async ({target}) => {
     timeout(keyArray, target);
 }
 
-// event Click Mouseover note
-const eventMouseover = async ({target, buttons}) => {
-    if (buttons) {
-        target.classList.add('piano-key-active', 'piano-key-active-pseudo');
-
-        const audioSrc = target.getAttribute('data-src');
-
-        await playAudio(audioSrc);
-
-        timeout(keyArray, target);
+// event Mouseover note
+const eventMouseover = async event => {
+    if (event.buttons) {
+        await eventClick(event);
     }
 };
 
